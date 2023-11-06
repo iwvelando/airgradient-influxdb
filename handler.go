@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Example point {"wifi":-64, "rco2":419, "pm01":4, "pm02":7, "pm10":7, "pm003_count":834, "tvoc_index":3`3, "nox_index":2, "atmp":32.07, "rhum":56}
+// Example point {"wifi":-64, "rco2":419, "pm01":4, "pm02":7, "pm10":7, "pm003_count":834, "tvoc_index":33, "nox_index":2, "atmp":32.07, "rhum":56}
 type airGradientData struct {
 	Id    string `json:"-"`
 	Ts    time.Time
