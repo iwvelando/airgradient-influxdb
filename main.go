@@ -179,14 +179,16 @@ func main() {
 	}()
 
 	log.Infof("listening on %s", config.Server.ListenAddr)
-	if err := server.ListenAndServe(); err != nil {
-		log.WithError(err).Error("failed to run http server")
-	}
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			log.WithError(err).Error("failed to run http server")
+		}
+	}()
 
 	sig := <-cancelCh
 	log.WithFields(log.Fields{
 		"op": "main",
 	}).Info(fmt.Sprintf("caught signal %v, flushing data to InfluxDB", sig))
 	writeAPI.Flush()
-	os.Exit(0)
+
 }
