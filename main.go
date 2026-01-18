@@ -4,16 +4,17 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"github.com/gorilla/mux"
-	influx "github.com/influxdata/influxdb-client-go/v2"
-	influxAPI "github.com/influxdata/influxdb-client-go/v2/api"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/gorilla/mux"
+	influx "github.com/influxdata/influxdb-client-go/v2"
+	influxAPI "github.com/influxdata/influxdb-client-go/v2/api"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 // Configuration represents a YAML-formatted config file
@@ -38,6 +39,7 @@ type InfluxDB struct {
 	Bucket            string
 	SkipVerifySsl     bool
 	FlushInterval     uint
+	HttpTimeout       uint
 }
 
 // Load a config file and return the Config struct
@@ -89,8 +91,13 @@ func InfluxConnect(config *Configuration) (influx.Client, influxAPI.WriteAPI, er
 		config.InfluxDB.FlushInterval = 30
 	}
 
+	if config.InfluxDB.HttpTimeout == 0 {
+		config.InfluxDB.HttpTimeout = 60
+	}
+
 	options := influx.DefaultOptions().
 		SetFlushInterval(1000 * config.InfluxDB.FlushInterval).
+		SetHTTPRequestTimeout(config.InfluxDB.HttpTimeout).
 		SetTLSConfig(&tls.Config{
 			InsecureSkipVerify: config.InfluxDB.SkipVerifySsl,
 		})
